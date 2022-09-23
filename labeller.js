@@ -5,7 +5,7 @@ const reference = document.getElementById('reference');
 const sequenceName =
   window.location.hash && sequences[window.location.hash.slice(1)] ?
   window.location.hash.slice(1) :
-  Object.keys(sequences)[0];
+  Object.keys(sequences)[0]; // if change this, we can change data that require annotations.
 const sequence = sequences[sequenceName];
 if (ungroupedSequences[sequenceName]) {
   document.body.classList.add('containsUngrouped');
@@ -125,10 +125,12 @@ function setSelectionMode(mode) {
   document.body.classList.remove('split');
   document.body.classList.remove('breaking');
   document.body.classList.remove('selector');
+  document.body.classList.remove('labeling');
   const oldMode = uiData.selectionMode;
   const changed = mode !== oldMode;
   document.body.classList.add(mode);
   uiData.selectionMode = mode;
+  console.log(mode);
   if (changed) {
     if (mode === 'split' && state.selection && state.subSelection && state.subSelection.length > 0) {
       handleEscape();
@@ -139,7 +141,7 @@ function setSelectionMode(mode) {
     } else if (mode === 'breaking') {
       if (state.subSelection.length === 0 && state.groups[state.selection].length === 1) {
         state.setState({
-          subSelection: state.groups[state.selection].slice(),
+          subSelection: state.groups[state.selection].slice(), //copy selection to subselection
         })
         state.setState({
           split: true,
@@ -148,10 +150,14 @@ function setSelectionMode(mode) {
       } else {
         handleEscape();
       }
+    } else if (mode === 'labeling' && state.selection) {
+      console.log(state.groups[state.selection]);
+      
     } else if (state.selection) {
       state.setState({
         merge: mode === 'merge',
         split: mode === 'split',
+        label: mode === 'label',
       });
       if (mode === 'merge' && state.subSelection.length > 0 && state.ungrouped[state.selection]) {
         state.setState({ tmpGroup: [ ...state.groups[state.selection], ...state.subSelection ] });
@@ -177,6 +183,7 @@ const state = {
   selection: null, // The group currently selected
   merge: false,
   split: false,
+  label: false,
   breakAt: null,
   splits: {},
   subSelection: [], // In split mode, the individual path elements that are set to become their own group
@@ -862,6 +869,11 @@ const setupLabeller = (name, svg) => {
         document.body.classList.remove('unselected');
       }
 
+    } else if (uiData.selectionMode === 'labeling'){ 
+      if (state.selection && state.subSelection.length === 1) {
+        console.log(labeling);
+      }
+
     } else {
       handleEscape();
       setSelectionMode('selector');
@@ -907,6 +919,7 @@ const handleBreak = () => {
     }
   }
 };
+
 
 const getSurroundingSelection = (oldSelection, paths) => {
   const surrounding = [oldSelection];
@@ -1072,6 +1085,8 @@ document.addEventListener('keydown', (event) => {
   } else if (event.key === '4' || event.key === 'b') {
     setSelectionMode('breaking');
     //handleBreak();
+  } else if (event.key === '5' || event.key === 'l') {
+    setSelectionMode('labeling');
   } else if (event.key === 'Escape' || event.key === 'h') {
     handleEscape();
     setSelectionMode('selector');
@@ -1102,6 +1117,7 @@ document.getElementById('merge').addEventListener('click', () => setSelectionMod
 document.getElementById('split').addEventListener('click', () => setSelectionMode('split'));
 document.getElementById('confirm').addEventListener('click', handleConfirm);
 document.getElementById('break').addEventListener('click', () => setSelectionMode('breaking'));
+document.getElementById('label').addEventListener('click', () => setSelectionMode('labeling'));
 document.getElementById('selector').addEventListener('click', () => setSelectionMode('selector'));
 document.getElementById('escape').addEventListener('click', () => {
   handleEscape();
@@ -1239,6 +1255,7 @@ const scapToSVG = function*(scap) {
   svg.setAttribute('data-height', h);
   svg.setAttribute('data-strokeWidth', thickness);
 
+  // visualize all strokes
   const allPaths = []
   for (let group in groups) {
     groups[group].forEach(({ globalId, polyline, strokeWidth }) => {
