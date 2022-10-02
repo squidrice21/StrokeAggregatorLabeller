@@ -158,10 +158,11 @@ a {
 .current-mode.mode-split { background-color: #04756F; }
 .current-mode.mode-selector { background-color: #6F0475; }
 .current-mode.mode-animation { background-color: #2E0927; }
-.mode-merge, .mode-split, .mode-animation, .mode-break, .mode-selector {
+.current-mode.mode-label{ background-color: #2E0927; }
+.mode-merge, .mode-split, .mode-animation, .mode-break, .mode-selector, .mode-label {
   display: none;
 }
-.highlighting .mode-animation, .selector:not(.highlighting) .mode-selector, .split:not(.highlighting) .mode-split, .merge:not(.highlighting) .mode-merge, .breaking:not(.highlighting) .mode-break {
+.highlighting:not(.labeling) .mode-animation, .labeling .mode-label, .selector:not(.highlighting) .mode-selector, .split:not(.highlighting) .mode-split, .merge:not(.highlighting) .mode-merge, .breaking:not(.highlighting) .mode-break {
   display: block;
 }
 
@@ -196,7 +197,7 @@ a {
   opacity: 0.4;
   cursor: default;
 }
-.split.selection.subselection #confirm, .merge.selection.subselection #confirm, .merge.selection.selectedUngrouped #confirm, .breaking.selection.subselection.single #confirm {
+.labeling #confirm, .split.selection.subselection #confirm, .merge.selection.subselection #confirm, .merge.selection.selectedUngrouped #confirm, .breaking.selection.subselection.single #confirm {
   opacity: 1;
   cursor: pointer;
   animation: selectedNotif 0.6s 1 normal linear, pulse 4s infinite normal linear;
@@ -315,6 +316,9 @@ a {
   opacity: 1;
   stroke-width: 3px;
   stroke: #F00 !important;
+}
+.highlighting #svgContainer path.labeled {
+  opacity: 1;
 }
 .highlighting #svgContainer path {
   opacity: 0.3;
