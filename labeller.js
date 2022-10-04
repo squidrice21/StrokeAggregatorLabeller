@@ -677,6 +677,9 @@ const animateGroups = () => {
   if (svgContainer.classList.contains('init') || !svg) return;
 
   handleEscape();
+  state.paths.forEach(function (changed_path) {
+    changed_path.classList.remove('labeled');
+  });
 
   // Make our own copy of groups
   const groups = { '__ungrouped': [] };
