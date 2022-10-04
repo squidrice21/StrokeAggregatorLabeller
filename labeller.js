@@ -195,7 +195,7 @@ const updateButtons = () => {
   redoBtn.disabled = redoStack.length == 0;
   console.log('called update');
 };
-const undoKeys = new Set(['groups', 'splits', 'labeled_paths'])
+const undoKeys = new Set(['groups', 'splits'])
 const state = {
   paths: [], // References to all svg path elements onscreen
   groups: {}, // Path elements indexed by their colour
@@ -1140,7 +1140,7 @@ const handleConfirm = () => {
     state.setState({
       labeled_paths: state.labeled_paths
     });
-    updateButtons();
+    state.commit();
     handleBreak();
     document.body.classList.remove('highlighting');
     document.body.classList.remove('visualizing');
