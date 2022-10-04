@@ -711,6 +711,7 @@ const animateGroups = () => {
 const visualizeGroups = () => {
   if (document.body.classList.contains('visualizing')) {
     document.body.classList.remove('visualizing');
+    setSelectionMode('selector')
     return;
   }
   const svg = document.querySelector('#svgContainer svg');
