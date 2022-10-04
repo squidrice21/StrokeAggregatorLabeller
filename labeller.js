@@ -121,22 +121,25 @@ let breakIndicator = null;
 const uiData = { selectionMode: 'selector', animationTimer: null };
 
 function setSelectionMode(mode) {
+  if (mode !== 'selector' && (svgContainer.classList.contains('init'))) return;
   document.body.classList.remove('merge');
   document.body.classList.remove('split');
-  document.body.classList.remove('breaking');
+  // document.body.classList.remove('breaking');
   document.body.classList.remove('selector');
   document.body.classList.remove('labeling');
+  document.body.classList.remove('shadingvis');
   const oldMode = uiData.selectionMode;
   const changed = mode !== oldMode;
   document.body.classList.add(mode);
   uiData.selectionMode = mode;
+  // console.log(a);
   console.log(mode);
   if (changed) {
     if (mode === 'split' && state.selection && state.subSelection && state.subSelection.length > 0) {
       handleEscape();
     } else if (mode === 'split' && state.selection && state.groups[state.selection].length === 1) {
       handleEscape();
-    } else if (!(oldMode === 'selector' && state.selection)) {
+    } else if (!(oldMode === 'selector' && state.selection) && mode !== 'labeling') {
       handleEscape();
     } else if (mode === 'breaking') {
       if (state.subSelection.length === 0 && state.groups[state.selection].length === 1) {
@@ -151,8 +154,27 @@ function setSelectionMode(mode) {
         handleEscape();
       }
     } else if (mode === 'labeling') {
+      console.log('Save label');
+      state.prev_state = state.clone(state)
+      console.log(state.prev_state.labeled_paths)
+      console.log(state.prev_state)
+      console.log('Inputs:')
+      console.log(state.labeled_paths)
+      state.paths.forEach(function (changed_path) {
+        changed_path.classList.remove('labeled');
+      });
+      {
+        document.body.classList.add('highlighting');
+        document.body.classList.remove('unselected');
+        state.paths.forEach(function (changed_path) {
+          id = changed_path.getAttribute('data-globalId')
+          if (state.labeled_paths.indexOf(id) !== -1)
+            changed_path.classList.add('labeled');
+        });
+      }
+      // handleEscape();
+    } else if (mode === 'shadingvis') {
       handleEscape();
-      console.log(mode);
     } else if (state.selection) {
       state.setState({
         merge: mode === 'merge',
@@ -179,6 +201,7 @@ const state = {
   groups: {}, // Path elements indexed by their colour
   groupEdited: {},
   ungrouped: {}, // Colours representing ungrouped strokes
+  prev_state: null,
   labeled_paths: [],
   pathSamples: new Map(),
   sampleLocations: [],
@@ -216,6 +239,7 @@ const state = {
     return {
       ...s,
       paths: [...s.paths],
+      labeled_paths: structuredClone(s.labeled_paths),
       groups: mapObjValues(s.groups, group => [...group]),
       pathSamples: mapMapValues(s.pathSamples, samples => [...samples]),
       subSelection: [...s.subSelection],
@@ -237,7 +261,7 @@ const state = {
       notify(p);
     });
     state.paths = newState.paths;
-
+    state.labeled_paths = newState.labeled_paths;
     state.sampleLocations = newState.sampleLocations;
     state.pathSamples = newState.pathSamples;
     if (removed.size > 0) {
@@ -276,10 +300,18 @@ const state = {
   },
 
   undo: () => {
+    console.log('Undo')
+    console.log(undoStack[undoStack.length - 1].labeled_paths)
+    for (let i = 0; i < undoStack.length; i++) {
+      console.log(i)
+      console.log(undoStack[i].labeled_paths)
+    }
     if (undoStack.length > 1) {
       redoStack.push(undoStack.pop());
       state.loadState(state.clone(undoStack[undoStack.length - 1]));
     }
+    console.log('Loaded')
+    console.log(state.labeled_paths)
     updateButtons();
   },
 
@@ -454,14 +486,22 @@ const state = {
   },
 
   commit: () => {
-    undoStack.push(state.clone(state));
+    {
+      undoStack.push(state.clone(state));
+    }
+    console.log('Pushed');
+    for (let i = 0; i < undoStack.length; i++) {
+      console.log(i)
+      console.log(undoStack[i].labeled_paths)
+    }
     while (redoStack.length > 0) redoStack.pop();
     if (undoStack.length > 10) {
       undoStack.shift();
     }
     updateButtons();
-    console.log(undoStack[undoStack.length-1]);
-    console.log('commit');
+    // console.log(undoStack[undoStack.length - 1]);
+    // console.log('commit');
+    // console.trace()
   },
 
   getGroup: path => path.getAttribute('stroke') || '',
@@ -601,7 +641,7 @@ const generateScap = () => {
         const id = pathId;
         const strokeWidth = path.getAttribute('data-strokeWidth');
         const widthLine = strokeWidth ? `\t@${strokeWidth}\n` : '';
-        const is_labeled = (state.labeled_paths.indexOf(path) !== -1) ? 3 : 0;
+        const is_labeled = (state.labeled_paths.indexOf(id) !== -1) ? 3 : 0;
         return (
           '{\n' +
           `\t#${id}\t${groupIndex[group]}\n` +
@@ -669,8 +709,8 @@ const animateGroups = () => {
 };
 
 const visualizeGroups = () => {
-  if (document.body.classList.contains('highlighting')) {
-    document.body.classList.remove('highlighting');
+  if (document.body.classList.contains('visualizing')) {
+    document.body.classList.remove('visualizing');
     return;
   }
   const svg = document.querySelector('#svgContainer svg');
@@ -678,23 +718,22 @@ const visualizeGroups = () => {
 
   handleEscape();
 
-  // Make our own copy of groups
-  const groups = { '__ungrouped': [] };
-  Object.keys(state.groups).forEach(group => {
-    if (state.groups[group] && state.groups[group].length > 0) {
-      if (state.ungrouped[group]) {
-        groups['__ungrouped'].push(...state.groups[group]);
-      } else {
-        groups[group] = [...state.groups[group]];
-      }
+  setSelectionMode('shadingvis')
+  document.body.classList.add('visualizing');
+  console.log('visualizeGroups')
+  console.log(state.labeled_paths)
+
+  state.paths.forEach(
+    function (changed_path) {
+      id = changed_path.getAttribute('data-globalId')
+      if (state.labeled_paths.indexOf(id) !== -1)
+        changed_path.classList.add('labeled');
+      else
+        changed_path.classList.remove('labeled');
     }
-  });
-  state.groupEdited['__ungrouped'] = 0;
-  const remaining = Object.keys(groups).sort((a, b) => {
-    return state.groupEdited[b] - state.groupEdited[a];
-  });
-  document.body.classList.add('highlighting');
-  state.labeled_paths.forEach(p => p.classList.add('labeled'))
+  )
+  console.log('state')
+  console.log(state)
 }
 
 const setupLabeller = (name, svg) => {
@@ -921,24 +960,31 @@ const setupLabeller = (name, svg) => {
           });
           console.log('aaa');
         }
-        paths.forEach(function(changed_path) {
-          if (state.labeled_paths.indexOf(changed_path) !== -1) {
-            console.log(state.labeled_paths.indexOf(changed_path));
-            state.labeled_paths.splice(state.labeled_paths.indexOf(changed_path), 1);
+        paths.forEach(function (changed_path) {
+          id = changed_path.getAttribute('data-globalId')
+          if (state.labeled_paths.indexOf(id) !== -1) {
+            console.log(state.labeled_paths.indexOf(id));
+            state.labeled_paths.splice(state.labeled_paths.indexOf(id), 1);
             changed_path.classList.remove('labeled');
           } else {
-            console.log(state.labeled_paths.indexOf(changed_path));
-            console.log(changed_path);
-            state.labeled_paths.push(changed_path);
+            // console.log(state.labeled_paths.indexOf(changed_path));
+            // console.log(changed_path);
+            state.labeled_paths.push(id);
             changed_path.classList.add('labeled');
           }
         });
         console.log(state.labeled_paths);
       } else {
+        console.log('Exit 3')
+        console.log(state.prev_state.labeled_paths)
+        state.loadState(state.clone(state.prev_state));
+
+        state.paths.forEach(function (changed_path) {
+          changed_path.classList.remove('labeled');
+        });
         handleEscape();
         setSelectionMode('selector');
       }
-
     } else {
       handleEscape();
       setSelectionMode('selector');
@@ -1097,6 +1143,10 @@ const handleConfirm = () => {
     updateButtons();
     handleBreak();
     document.body.classList.remove('highlighting');
+    document.body.classList.remove('visualizing');
+    state.paths.forEach(function (changed_path) {
+      changed_path.classList.remove('labeled');
+    });
   }
 
   handleEscape();
@@ -1112,7 +1162,13 @@ function handleEscape() {
   }
   if (state.selection) document.body.classList.remove('first-selection');
   if (state.subSelection.length > 0) document.body.classList.remove('first-split');
+  document.body.classList.remove('visualizing');
   const currentMode = uiData.selectionMode;
+
+  if (currentMode === 'labeling') {
+    document.body.classList.remove('highlighting');
+  }
+
   state.setState({
     split: false,
     merge: false,
@@ -1121,7 +1177,11 @@ function handleEscape() {
     selection: null,
     tmpGroup: [],
   });
+  // console.log('currentMode')
+  // console.log(currentMode)
   setSelectionMode(currentMode);
+  // console.log('currentMode2')
+  // console.log(currentMode)
 }
 
 const zoomFactor = 1.025;
@@ -1157,16 +1217,24 @@ document.addEventListener('keydown', (event) => {
     setSelectionMode('split');
   } else if (event.key === '3' || event.key === 'c') {
     handleConfirm();
-  } else if (event.key === '4' || event.key === 'b') {
-    setSelectionMode('breaking');
-    //handleBreak();
+    // } else if (event.key === '4' || event.key === 'b') {
+    //   setSelectionMode('breaking');
+    //   //handleBreak();
   } else if (event.key === '5' || event.key === 'l') {
     setSelectionMode('labeling');
   } else if (event.key === 'Escape' || event.key === 'h') {
     handleEscape();
-    setSelectionMode('selector');
-    if (document.body.classList.contains('labeling'))
+    if (document.body.classList.contains('labeling')) {
+      console.log('Exit labeling')
       undoStack.pop();
+      console.log(state.prev_state.labeled_paths)
+      state.loadState(state.clone(state.prev_state));
+
+      state.paths.forEach(function (changed_path) {
+        changed_path.classList.remove('labeled');
+      });
+    }
+    setSelectionMode('selector');
   } else if ((event.metaKey || event.ctrlKey) && event.key === 'z' && !event.shiftKey) {
     event.preventDefault();
     event.stopPropagation();
@@ -1194,14 +1262,21 @@ document.getElementById('visualize').addEventListener('click', visualizeGroups);
 document.getElementById('merge').addEventListener('click', () => setSelectionMode('merge'));
 document.getElementById('split').addEventListener('click', () => setSelectionMode('split'));
 document.getElementById('confirm').addEventListener('click', handleConfirm);
-document.getElementById('break').addEventListener('click', () => setSelectionMode('breaking'));
+// document.getElementById('break').addEventListener('click', () => setSelectionMode('breaking'));
 document.getElementById('label').addEventListener('click', () => setSelectionMode('labeling'));
 document.getElementById('selector').addEventListener('click', () => setSelectionMode('selector'));
 document.getElementById('escape').addEventListener('click', () => {
   handleEscape();
+  if (document.body.classList.contains('labeling')) {
+    console.log('Exit labeling')
+    console.log(state.prev_state.labeled_paths)
+    undoStack.pop();
+    state.loadState(state.clone(state.prev_state));
+    state.paths.forEach(function (changed_path) {
+      changed_path.classList.remove('labeled');
+    });
+  }
   setSelectionMode('selector');
-  if (document.body.classList.contains('labeling'))
-      undoStack.pop();
 });
 document.getElementById('redownload').addEventListener('click', () => {
   Object.keys(downloads).forEach(filename => download(downloads[filename], filename));
