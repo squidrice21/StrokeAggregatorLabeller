@@ -158,7 +158,7 @@ a {
 .current-mode.mode-split { background-color: #04756F; }
 .current-mode.mode-selector { background-color: #6F0475; }
 .current-mode.mode-animation { background-color: #2E0927; }
-.current-mode.mode-shadingvis{ background-color: #dca1d1; }
+.current-mode.mode-shadingvis{ background-color: #003775; }
 .current-mode.mode-label{ background-color: #2E0927; }
 .mode-merge, .mode-split, .mode-animation, .mode-break, .mode-selector, .mode-shadingvis, .mode-label {
   display: none;

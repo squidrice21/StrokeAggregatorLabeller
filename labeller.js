@@ -312,6 +312,10 @@ const state = {
     }
     console.log('Loaded')
     console.log(state.labeled_paths)
+    if (document.body.classList.contains('shadingvis')){
+      document.body.classList.remove('visualizing');
+      visualizeGroups();
+    }
     updateButtons();
   },
 
@@ -319,6 +323,10 @@ const state = {
     if (redoStack.length > 0) {
       undoStack.push(redoStack.pop());
       state.loadState(state.clone(undoStack[undoStack.length - 1]));
+    }
+    if (document.body.classList.contains('shadingvis')){
+      document.body.classList.remove('visualizing');
+      visualizeGroups();
     }
     updateButtons();
   },
