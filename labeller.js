@@ -2,6 +2,7 @@ const ns = 'http://www.w3.org/2000/svg'; // needs to be passed in when creating 
 const svgContainer = document.getElementById('svgContainer');
 const splitSingleMessage = document.getElementById('splitSingleMessage');
 const reference = document.getElementById('reference');
+console.log(window.location.hash);
 const sequenceName =
   window.location.hash && sequences[window.location.hash.slice(1)] ?
     window.location.hash.slice(1) :
@@ -1306,7 +1307,8 @@ const download = (content, filename) => {
 };
 
 const downloadFiles = (start = '') => {
-  const [prefix, suffix] = state.name.replace('data/', '').split('.');
+  filename = state.name.split('\\').pop().split('/').pop();
+  const [prefix, suffix] = filename.split('.');
   const duration = Math.round((new Date().getTime() - startTime.getTime()) / 1000);
   download(generateScap(), `${start}${prefix}_${duration}s_cleaned.scap`);
 };
