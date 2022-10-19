@@ -18,6 +18,7 @@ const modal = document.getElementById('modal');
 const modalSlides = [...modal.querySelectorAll('.slide')];
 const modalNext = document.getElementById('modal-next');
 const modalPrev = document.getElementById('modal-prev');
+const disabled_group = [];
 const showModalSlide = slide => {
   if (!slide) return;
 
@@ -313,7 +314,7 @@ const state = {
     }
     console.log('Loaded')
     console.log(state.labeled_paths)
-    if (document.body.classList.contains('shadingvis')){
+    if (document.body.classList.contains('shadingvis')) {
       document.body.classList.remove('visualizing');
       visualizeGroups();
     }
@@ -325,7 +326,7 @@ const state = {
       undoStack.push(redoStack.pop());
       state.loadState(state.clone(undoStack[undoStack.length - 1]));
     }
-    if (document.body.classList.contains('shadingvis')){
+    if (document.body.classList.contains('shadingvis')) {
       document.body.classList.remove('visualizing');
       visualizeGroups();
     }
@@ -636,8 +637,12 @@ const generateScap = () => {
     //if (state.ungrouped[group]) {
     //groupIndex[group] = -1;
     //} else {
-    groupIndex[group] = nextGroup;
-    nextGroup++;
+    if (disabled_group.includes(group)) {
+      groupIndex[group] = -1;
+    } else {
+      groupIndex[group] = nextGroup;
+      nextGroup++;
+    }
     //}
   }
 
@@ -735,7 +740,6 @@ const visualizeGroups = () => {
   document.body.classList.add('visualizing');
   console.log('visualizeGroups')
   console.log(state.labeled_paths)
-
   state.paths.forEach(
     function (changed_path) {
       id = changed_path.getAttribute('data-globalId')
@@ -1427,6 +1431,7 @@ const scapToSVG = function* (scap) {
   // visualize all strokes
   const allPaths = []
   for (let group in groups) {
+    if (group < 0) disabled_group.push(groupColors[group]);
     groups[group].forEach(({ globalId, polyline, strokeWidth }) => {
       const path = document.createElementNS(ns, 'path');
       path.setAttribute('d', `M ${polyline[0]} ${polyline.slice(1).map(c => 'L ' + c).join(' ')}`);
