@@ -339,10 +339,10 @@ a {
   stroke-width: 3px;
   opacity: 1;
 }
-.visualizing #svgContainer path.labeled {
+.visualizing #svgContainer path.labeled, #svgConfirm path.labeled {
   opacity: 1;
 }
-.visualizing #svgContainer path {
+.visualizing #svgContainer path, #svgConfirm path {
   opacity: 0.3;
 }
 
@@ -435,7 +435,7 @@ section#header p {
 }
 #svgConfirm {
   flex: 3;
-  align-self: stretch;
+  align-self: center;
   display: flex;
   position: relative;
   margin-right: 10px;
@@ -445,7 +445,6 @@ section#header p {
 }
 
 #svgConfirm svg {
-  align-self: stretch;
   cursor: default;
 }
 

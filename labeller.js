@@ -2,6 +2,7 @@ const ns = 'http://www.w3.org/2000/svg'; // needs to be passed in when creating 
 const svgContainer = document.getElementById('svgContainer');
 const splitSingleMessage = document.getElementById('splitSingleMessage');
 const reference = document.getElementById('reference');
+console.log(window.location.hash);
 const sequenceName =
   window.location.hash && sequences[window.location.hash.slice(1)] ?
     window.location.hash.slice(1) :
@@ -1310,13 +1311,16 @@ const download = (content, filename) => {
 };
 
 const downloadFiles = (start = '') => {
-  const [prefix, suffix] = state.name.replace('data/', '').split('.');
+  filename = state.name.split('\\').pop().split('/').pop();
+  const [prefix, suffix] = filename.split('.');
   const duration = Math.round((new Date().getTime() - startTime.getTime()) / 1000);
   download(generateScap(), `${start}${prefix}_${duration}s_cleaned.scap`);
 };
-document.getElementById('incomplete').addEventListener('click', () => {
+
+const visualize_confirmation = () => {
   con = document.getElementById('confirmation');
   con.classList.add('vis');
+  visualizeGroups();
   svg_confirm = document.getElementById('svgConfirm');
   svgc = document.getElementById('svgContainer');
   const child = svgc.querySelector("svg").cloneNode(true);
@@ -1324,11 +1328,33 @@ document.getElementById('incomplete').addEventListener('click', () => {
   ellipse.remove();
   ellipse = child.querySelector("ellipse");
   ellipse.remove();
-  svg_confirm.appendChild(child.cloneNode(true));
-  // if (confirm('Ending early will skip all remaining drawings.')) {
-  //   downloadFiles('INCOMPLETE_');
-  //   document.body.classList.add('finished');
-  // }
+  stateConfirm = state;
+  stateConfirm.loadState(state);
+  svg_confirm.appendChild(child);
+}
+document.getElementById('incomplete').addEventListener('click', () => {
+  visualize_confirmation();
+});
+
+document.getElementById('cancel').addEventListener('click', () => {
+  visualizeGroups();
+  con = document.getElementById('confirmation');
+  con.classList.remove('vis');
+  child = con.querySelector("svg")
+  child.remove();
+});
+
+
+document.getElementById('saveExit').addEventListener('click', () => {
+  visualizeGroups();
+  con = document.getElementById('confirmation');
+  con.classList.remove('vis');
+  child = con.querySelector("svg")
+  child.remove();
+  if (confirm('Ending early will skip all remaining drawings.')) {
+    downloadFiles('INCOMPLETE_');
+    document.body.classList.add('finished');
+  }
 });
 
 const scapToSVG = function* (scap) {
@@ -1576,6 +1602,16 @@ radiusSelect.addEventListener('change', () => {
 
 
 next.addEventListener('click', () => {
+  visualize_confirmation();
+});
+
+
+document.getElementById('saveNext').addEventListener('click', () => {
+  visualizeGroups();
+  con = document.getElementById('confirmation');
+  con.classList.remove('vis');
+  child = con.querySelector("svg")
+  child.remove();
   if (!next.disabled) {
     downloadFiles();
     sequence.shift();
@@ -1587,6 +1623,9 @@ next.addEventListener('click', () => {
     next.disabled = true;
   }
 });
+
+
+
 loadInput();
 setSelectionMode('selector');
 //sequence.forEach((name, i) => {
