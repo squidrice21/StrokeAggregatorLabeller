@@ -435,7 +435,7 @@ section#header p {
 }
 #svgConfirm {
   flex: 3;
-  align-self: center;
+  align-self: stretch;
   display: flex;
   position: relative;
   margin-right: 10px;
