@@ -24,7 +24,11 @@
   margin: 5px;
 }
 
-#modal {
+#confirmation:not(.vis) {
+  display: none;
+}
+
+#modal, #confirmation.vis {
   position: absolute;
   box-sizing: border-box;
   top: 50%;
@@ -41,6 +45,10 @@
   flex-direction: column;
   z-index: 999;
 }
+
+#svgConfirm {
+  position: relative;
+}
 #modal h1 {
   font-size: 22px;
   text-align: left;
@@ -53,7 +61,7 @@
 #modal .slide {
   display: none;
 }
-#modal .row {
+#modal .row, #confirmation .row {
   position: relative;
 }
 .flex {
@@ -425,8 +433,29 @@ section#header p {
   margin-right: 10px;
   overflow: auto;
 }
+#svgConfirm {
+  flex: 3;
+  align-self: stretch;
+  display: flex;
+  position: relative;
+  margin-right: 10px;
+  overflow: auto;
+  
+  cursor: default;
+}
+
+#svgConfirm svg {
+  align-self: stretch;
+  cursor: default;
+}
+
 #reference svg {
   margin: auto;
+}
+
+#svgConfirm svg path {
+  stroke: #000 !important;
+  fill: none;
 }
 .timer #reference {
   flex: 14;

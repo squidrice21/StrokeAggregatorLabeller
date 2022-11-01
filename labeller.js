@@ -1315,10 +1315,20 @@ const downloadFiles = (start = '') => {
   download(generateScap(), `${start}${prefix}_${duration}s_cleaned.scap`);
 };
 document.getElementById('incomplete').addEventListener('click', () => {
-  if (confirm('Ending early will skip all remaining drawings.')) {
-    downloadFiles('INCOMPLETE_');
-    document.body.classList.add('finished');
-  }
+  con = document.getElementById('confirmation');
+  con.classList.add('vis');
+  svg_confirm = document.getElementById('svgConfirm');
+  svgc = document.getElementById('svgContainer');
+  const child = svgc.querySelector("svg").cloneNode(true);
+  ellipse = child.querySelector("ellipse");
+  ellipse.remove();
+  ellipse = child.querySelector("ellipse");
+  ellipse.remove();
+  svg_confirm.appendChild(child.cloneNode(true));
+  // if (confirm('Ending early will skip all remaining drawings.')) {
+  //   downloadFiles('INCOMPLETE_');
+  //   document.body.classList.add('finished');
+  // }
 });
 
 const scapToSVG = function* (scap) {
