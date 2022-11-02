@@ -339,11 +339,11 @@ a {
   stroke-width: 3px;
   opacity: 1;
 }
-.visualizing #svgContainer path.labeled, #svgConfirm path.labeled {
+.visualizing #svgContainer path.labeled, #svgConfirm path {
   opacity: 1;
 }
 .visualizing #svgContainer path, #svgConfirm path {
-  opacity: 0.3;
+  opacity: 0.8;
 }
 
 html, body {
@@ -454,6 +454,10 @@ section#header p {
 
 #svgConfirm svg path {
   fill: none;
+}
+#svgConfirm path[data-ungrouped="true"] {
+  stroke: #0FF;
+  opacity: 1;
 }
 .timer #reference {
   flex: 14;

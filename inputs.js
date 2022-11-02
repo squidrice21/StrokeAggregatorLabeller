@@ -3,13 +3,6 @@ const sequences = {
   //   "data/BowTie01_tutorial.scap",
   //   "data/instruction_box2.scap",
   // ],
-  "sess1_2": [
-    "./data/sess1//champ-12_135s_cleaned.scap", 
-    "./data/sess1//ariel-1_211s_cleaned.scap", 
-    "./data/sess1//nymurkhan-1_381s_cleaned.scap", 
-    "./data/sess1//edwin-4_318s_cleaned.scap", 
-    "./data/sess1//gui_square_23s_cleaned.scap", 
-  ],
   "sess1": [
     "data_unlabeled/sess1/gui_square.scap",
     "data_unlabeled/sess1/ariel-1.scap",
