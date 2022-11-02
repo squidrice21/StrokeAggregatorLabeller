@@ -453,7 +453,6 @@ section#header p {
 }
 
 #svgConfirm svg path {
-  stroke: #000 !important;
   fill: none;
 }
 .timer #reference {
