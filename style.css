@@ -343,7 +343,7 @@ a {
   opacity: 1;
 }
 .visualizing #svgContainer path, #svgConfirm path {
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 html, body {

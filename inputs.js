@@ -13,7 +13,7 @@ const sequences = {
   "sess2": [
     "data_unlabeled/sess2/gui_square.scap",
     // "data_unlabeled/sess2/ariel-12.scap",
-    "data_unlabeled/sess2/runner_SA_cluster.scap",
+    // "data_unlabeled/sess2/runner_SA_cluster.scap",
     "data_unlabeled/sess2/champ-14.scap",
     "data_unlabeled/sess2/edwin-6.scap",
     "data_unlabeled/sess2/nymurkhan-8.scap",
