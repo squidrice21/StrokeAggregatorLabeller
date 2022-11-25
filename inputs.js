@@ -37,6 +37,23 @@ const sequences = {
     "data_unlabeled/sess5/student7_shampoo_bottle_view1_presentation.scap",
     "data_unlabeled/sess5/Ind_fashion_RB_10_norm_full.scap"
   ],
+  "sess6": [
+    "data_unlabeled/sess6/gui_square.scap",
+    "data_unlabeled/sess6/Ind_product_PM_01_norm_rough.scap",
+    "data_unlabeled/sess6/Artist_02_Sketch_07_label_204.scap",
+    "data_unlabeled/sess6/Professional2_bumps_view2_presentation.scap"
+  ],
+  "sess7": [
+    "data_unlabeled/sess7/gui_square.scap",
+    "data_unlabeled/sess7/plushie1_label_202.scap",
+    "data_unlabeled/sess7/Art_freeform_GL_01_norm_rough.scap",
+    "data_unlabeled/sess7/Art_freeform_PB_01_norm_rough.scap"
+  ],
+  "sess8": [
+    "data_unlabeled/sess8/gui_square.scap",
+    "data_unlabeled/sess8/Professional1_mixer_view1_presentation.scap",
+    "data_unlabeled/sess8/Professional3_waffle_iron_view1_presentation.scap"
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
