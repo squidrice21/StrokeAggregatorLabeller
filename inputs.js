@@ -30,7 +30,13 @@ const sequences = {
     "data_unlabeled/sess4/tina-15.scap",
     "data_unlabeled/sess4/val_novikov-10.scap",
   ],
-  
+  "sess5": [
+    "data_unlabeled/sess5/gui_square.scap",
+    "data_unlabeled/sess5/Artist_01_Sketch_01_label_201.scap",
+    "data_unlabeled/sess5/hamstertoon_label_202.scap",
+    "data_unlabeled/sess5/student7_shampoo_bottle_view1_presentation.scap",
+    "data_unlabeled/sess5/Ind_fashion_RB_10_norm_full.scap"
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
