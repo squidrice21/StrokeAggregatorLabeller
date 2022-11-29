@@ -54,6 +54,9 @@ const sequences = {
     "data_unlabeled/sess8/Professional1_mixer_view1_presentation.scap",
     "data_unlabeled/sess8/Professional3_waffle_iron_view1_presentation.scap"
   ],
+  "sess9": [
+    "data_unlabeled/sess9/hamstertoon_label_202.scap",
+  ],
 };
 const ungroupedSequences = {
   test_ungrouped: true,
